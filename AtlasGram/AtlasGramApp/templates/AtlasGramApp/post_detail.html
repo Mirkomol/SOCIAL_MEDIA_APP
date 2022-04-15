@@ -1,0 +1,85 @@
+{% extends 'AtlasGramApp/main.html' %}
+{% block title %} AtlasGramHome {% endblock title %}
+
+{% block content %}
+
+        <article class="media content-section">
+            <img class="rounded-circle article-img" src="{{post.author.profile.image.url}}" alt="">
+            <div class="media-body">
+            <div class="article-metadata">
+              <a class="mr-2" href="{% url 'user-posts' object.author.username %}">{{ object.author }}</a>
+              <small class="text-muted">{{ object.date_posted }}</small>
+              {% if object.author == user %}
+                <div>
+                    <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{% url 'post-update' object.id %} ">Update</a>
+                    <a class="btn btn-danger btn-sm mt-1 mb-1" href="{% url 'post-delete' object.id %} ">Delete</a>
+                </div>
+                {% endif %}
+            </div>
+            <h2><a class="article-title">{{object.title}}</h2>
+            <p class="article-content">{{ object.content }}</p>
+
+                <br>
+            <span>
+                <form action="{% url 'like_post' post.pk  %}" method="POST">
+                        {% csrf_token %}
+                    <button type="submit" name="post_id" value="{{ post.id }}" class="btn btn-danger btn-sm" style="font-size:14px">Like <i class="fa fa-thumbs-up"></i></button> : {{total_likes}} Likes
+                </form>
+
+            </span>
+                <br>
+
+                 <span>
+                    <button style="font-size:14px">Comments <i class="fa fa-comments-o"></i></button> : {{post_comments_count}}
+                </span>
+
+
+          </div>
+        </article>
+
+
+            <div class="section">
+                <div class="container">
+
+                    <h3>Comments ({{post_comments_count}}) </h3>
+
+                    <div class="row">
+                        <div class="col-lg-10 mx-auto">
+                            
+                            <div class="media-list">
+                                {% for comment in post_comments %}
+                                    <div>
+                                        <img src="{{comment.user.profile.image.url}}" alt="" class="rounded-circle article-img">
+                                        <div class="media-body">
+                                            <div class="small-1">
+                                                <div class="container-sm"><b>{{comment.user}}</b></div>
+                                                <div class="container">
+                                                    <p class="date">{{comment.date}}</p>
+                                                </div>
+                                            </div>
+                                            <div class="content-section">
+                                                <p>{{comment.content}}</p>
+                                                 {% if object.author == comment.user %}
+                                                        <a class="btn btn-danger btn-sm mt-1 mb-1" href="{% url 'postcomment-delete' comment.id %} ">Delete</a>
+                                                 {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <form method="POST">
+                                {% csrf_token %}
+
+                                <div class="form-group">
+                                    {{form}}
+                                </div>
+                                 <button class="btn btn-primary btn-sm" type="submit">Comment</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+{% endblock content %}
